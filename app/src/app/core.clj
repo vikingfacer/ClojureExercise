@@ -48,9 +48,9 @@
     []
     (defn map-set 
       "maps a function returns a set"
-      [func &  args]
-      (into {} (map func args)))
-      (println "map set func " (map-set (fn [arg] (arg + 100)) 1 2 3 4 5) ))
+      [func  args]
+      (into #{} (map func args)))
+      (println "map set func " (map-set inc [1 2 3 4 5 5]) ))
 
 
 (defn -main
