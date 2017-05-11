@@ -1,64 +1,77 @@
 (ns app.core
-  (:gen-class))
+  (:gen-class)
+  (:require [clojure.java.io :as io] )
+  (:require [clojure.string :as String]))
 
-(defn Ch3Pr1 
-  "problem from chapter 3 problem 1"
-  []
-  (println "Ch3Pr1")
-  (let [string  "made a string"] 
-    (println string))
-  (let [vector (vec '(1 2 3 4 5 6) )]
-    (println (str "this is a vector " vector)))
-  (let [list '(l f 2 4 5 d :l)]
-    (println (str "this is a list " list)))
-  (let [hash-map (hash-map :k 3 :l 2 :s 15215  :j 5 :o 5 :p 5 :i 5 )]
-    (println (str "this is a hash-map " hash-map)))
-  (let [hashset (hash-set 8 :k :j 9 )]
-    (println (str "this is a hash-set " hashset)))
+(def filename (io/resource "suspects.csv"))
+
+(def vamp-keys [:name :glitter-index])
+
+(defn str->int
+  [str]
+  (Integer. str))
+
+(def conversions {:name identity
+                  :glitter-index str->int})
+
+(defn convert
+  [vamp-key value]
+  ((get conversions vamp-key) value))
+
+(defn parse
+  "Convert a CSV into rows of columns"
+  [string]
+  (map #(String/split % #",")
+       (String/split string #"\n")))
+
+(defn mapify
+  "Return a seq of maps like {:name \"Edward Cullen\" :glitter-index 10}"
+  [rows]
+  (map (fn [unmapped-row]
+         (reduce (fn [row-map [vamp-key value]]
+                 (assoc row-map vamp-key (convert vamp-key value)))
+                 {}
+                 (map vector vamp-keys unmapped-row)))
+       			  rows))
+
+(defn glitter-filter
+  [minimum-glitter records]
+  (filter #(>= (:glitter-index %) minimum-glitter) records))
+
+
+(defn glittery-names 
+	"retruns the result of the glitter-filter but only names
+ 	 Problem 1
+ 	"
+ 	[ minimum-glitter records]
   
-  )
-
-(defn Ch3Pr2
-  "problem from chapter 3 problem 2"
-  [ ]
-  (println "Ch3Pr2")
-  (defn add100 
-    [addthis]
-    (+ addthis 100))
-  	(let [qu (quote (add100 9) )] 
-     (println qu (add100 9) )))
-
-(defn Ch3Pr3
-    "problem from chapter 3 problem 3"
-    []
-  (println "Ch3Pr3")
-  (defn dec-maker
-    "returns function like -- but by arg"
-    [ dec]
-    #(- % dec))
-  (def x-9 (dec-maker 9))
-  (println (str  "x-9 "  (x-9 10))))
-
-(defn Ch3Pr4
-    "problem from chapter 3 problem 4
-     	write a map-set function 
-     	(map-set inc [ 1 1 2 2])
-     	; => #(2 3)
-    "
-    []
-    (defn map-set 
-      "maps a function returns a set"
-      [func  args]
-      (into #{} (map func args)))
-      (println "map set func " (map-set inc [1 2 3 4 5 5]) ))
-
+ 	(into '() (map :name (filter #(>= (:glitter-index %) minimum-glitter) records) )))
 
 (defn -main
   "I don't do a whole lot."
   []
-  (println "Hello, World!")
-  (Ch3Pr1)
-  (Ch3Pr2)
-  (Ch3Pr3)
-  (Ch3Pr4))
+  
+  (println (glittery-names 3 (mapify (parse (slurp filename)))))
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
