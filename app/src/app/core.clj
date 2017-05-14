@@ -47,11 +47,55 @@
   
  	(into '() (map :name (filter #(>= (:glitter-index %) minimum-glitter) records) )))
 
+
+(defn append 
+  "returns a list of suspects plus a new one"
+  [suspectList suspect]
+  (conj suspectList suspect))
+
+
+(defn Valid-string? 
+  "checks for a valid string"
+  [string]
+  (and (string? string) (not (empty? string)) string))
+
+(defn Valid-glitter-index?
+  "checks for a valid glitter-index"
+  [glitter-index]
+  (and (integer? glitter-index) (<= 0 glitter-index) glitter-index))
+
+(def Valid-Map
+  {:name Valid-string?
+   :glitter-index Valid-glitter-index?})
+
+
+(defn validate 
+  "checks if the entered items are valid name: and :glitter-index
+  	Meaning they exist"
+   [KeyMap suspect]
+   (let [Keylist (keys KeyMap)]
+    ; Id like to make the list of keys to these 2 gets and then filter 
+    ; to see if an invalid responce was given 
+    ; first create keys 
+    ; second map gets to valid map and supect
+    ; filter results
+   ( map (get Valid-Map KeyMap) (get suspect KeyMap) )))
+
 (defn -main
   "I don't do a whole lot."
   []
+  (def suspects (mapify(parse (slurp filename))))
   
-  (println (glittery-names 3 (mapify (parse (slurp filename)))))
+  (println  suspects)
+  (def strr "hi yo")
+  (println strr (Valid-string? strr))
+  (def intt 3 )
+  (println intt (Valid-glitter-index? intt))
+
+  (def tom {:name "tom" :glitter-index 9})
+  (println ((Valid-Map :name) "tom") ((Valid-Map :glitter-index)  9) )
+
+  (println(validate :name tom) (get tom :name) )  
 )
 
 
